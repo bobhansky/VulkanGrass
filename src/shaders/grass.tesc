@@ -40,7 +40,7 @@ void main() {
         gl_TessLevelOuter[0] = 1;
         gl_TessLevelOuter[1] = 1;
         gl_TessLevelOuter[2] = 1;
-        // gl_TessLevelOuter[3] = 32;
+        gl_TessLevelOuter[3] = 1;
 
         // gl_TessLevelInner[0] = ;
         // gl_TessLevelInner[1] = ;

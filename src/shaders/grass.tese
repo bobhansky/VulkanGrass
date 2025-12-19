@@ -1,7 +1,7 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-layout(triangles, equal_spacing, ccw) in;
+layout(quads, equal_spacing, ccw) in;
 
 layout(set = 0, binding = 0) uniform CameraBufferObject {
     mat4 view;
@@ -25,32 +25,22 @@ void main() {
     float u = gl_TessCoord.x;
     float v = gl_TessCoord.y;
 
-    float w = gl_TessCoord.z;
-
 	// TODO: Use u and v to parameterize along the grass blade and output positions for each vertex of the grass blade
 
     float angle = inParams[0].x;          // blade direction in radians
-    float height = inParams[0].y * 2;     // blade height
+    float height = inParams[0].y;     // blade height
     float width  = inParams[0].z;         // blade width
     
     // bitangent t1
     vec3 dir = normalize( vec3(cos(angle), 0, sin(angle)) );
     vec3 up = vec3(0.0, 1.0, 0.0);
 
-    // Build ONE triangle: base-left, base-right, tip
-    vec3 offset;
-    if (u > 0.5) {
-        // base-left
-        offset = -0.5 * width * dir;
-    } else if (v > 0.5) {
-        // base-right
-        offset =  0.5 * width * dir;
-    } else {
-        // tip
-        offset = up * height;
-    }
-
-    vec3 worldPos = inV0[0] + offset;
+    // quad 
+    float halfWidth = width * 0.5;
+    vec3 widthOffset = (u - 0.5) * 2.0 * halfWidth * dir;
+    // Quad construction
+    vec3 heightOffset = v * height * up;
+    vec3 worldPos = inV0[0] + widthOffset + heightOffset;
     outUV = vec2(u, v);
 
     // Final clip-space position
