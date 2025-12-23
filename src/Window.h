@@ -17,5 +17,5 @@ void InitializeWindow(int width, int height, const char* name);
 bool ShouldQuit();
 void DestroyWindow();
 
-#define HEIGHT 600.f
-#define WIDTH 800.f
+#define HEIGHT 900.f
+#define WIDTH 1600.f

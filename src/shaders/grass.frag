@@ -17,8 +17,9 @@ void main() {
     vec3 yellowLight = vec3(0.8, 0.8, 0.0);
     vec3 yellowDark = vec3(0.5, 0.5, 0.0);
 
-    float coef = smoothstep(0.2, 0.5, inUV.y);
-    vec3 color = mix(yellowLight, yellowDark, coef);
+
+    float coef = smoothstep(0.0, 0.9, inUV.y);
+    vec3 color = mix(yellowDark, yellowLight, coef);
 
     outColor = vec4(color, 1.0); 
 }

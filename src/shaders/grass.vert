@@ -15,7 +15,7 @@ layout(location = 3) in vec4 up;    // up, stiffness   up is always 0,1,0  in th
 layout(location = 0) out vec3 outV0;
 layout(location = 1) out vec3 outV1;
 layout(location = 2) out vec3 outV2;
-layout(location = 3) out vec3 outParams;
+layout(location = 3) out vec4 outParams;
 
 
 void main() {
@@ -31,5 +31,5 @@ void main() {
     outV0 = worldV0.xyz;
     outV1 = worldV1.xyz;
     outV2 = worldV2.xyz;
-    outParams = vec3(v0.w, v1.w, v2.w);
+    outParams = vec4(v0.w, v1.w, v2.w, up.w);
 }

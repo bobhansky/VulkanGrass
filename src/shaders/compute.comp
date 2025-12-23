@@ -4,6 +4,12 @@
 #define WORKGROUP_SIZE 32
 layout(local_size_x = WORKGROUP_SIZE, local_size_y = 1, local_size_z = 1) in;
 
+#define RECOVERY_FORCE 1
+#define GRAVITY 1
+#define WIND 1
+#define COLISSION 1
+
+
 layout(set = 0, binding = 0) uniform CameraBufferObject {
     mat4 view;
     mat4 proj;
@@ -15,10 +21,10 @@ layout(set = 1, binding = 0) uniform Time {
 };
 
 struct Blade {
-    vec4 v0;
-    vec4 v1;
-    vec4 v2;
-    vec4 up;
+    vec4 v0;    // xyz, dir
+    vec4 v1;    // xyz, height
+    vec4 v2;    // xyz, width
+    vec4 up;    // xyz, stiffness
 };
 
 // TODO: Add bindings to:
@@ -54,6 +60,28 @@ bool inBounds(float value, float bounds) {
     return (value >= -bounds) && (value <= bounds);
 }
 
+vec3 wind(vec2 v0xz, float time)
+{
+    vec3 dir = normalize(vec3(1.0, 0.0, 0.3)); // main wind direction
+
+    float wavelength = 50.0;
+    float speed      = 1.2;
+    float strength   = 5.0;
+
+    // phi(v0, t) = 2pi/wavelength * dot(pos, dir) - speed * t
+    float phase = dot(v0xz, dir.xz) * (2.0 * 3.14 / wavelength)
+                  - time * speed;
+
+    float base = sin(phase);
+
+    // small secondary noise-like wave
+    float gust = 0.35 * sin(phase * 4.0 + time * 1.9);
+
+    float w = strength * (base + gust);
+
+    return dir * w;
+}
+
 void main() {
 	// Reset the number of blades to 0
 	if (gl_GlobalInvocationID.x == 0) {
@@ -63,8 +91,64 @@ void main() {
 
     uint bladeIdx = gl_GlobalInvocationID.x;
     Blade curBlade = inputBlades.blades[bladeIdx];
+    float height = curBlade.v1.w;
+    float stiffness = curBlade.up.w;
 
     // TODO: Apply forces on every blade and update the vertices in the buffer
+    vec3 naturalForce = vec3(0.0, 0.0, 0.0); 
+    vec3 v0 = curBlade.v0.xyz;
+    vec3 v1 = curBlade.v1.xyz;
+    vec3 v2 = curBlade.v2.xyz;
+    vec3 up = curBlade.up.xyz;
+
+#if RECOVERY_FORCE
+    vec3 initV2Pos = v0 + up * height;
+    vec3 r = (initV2Pos - v2) * stiffness;
+    naturalForce += r;
+#endif
+
+#if GRAVITY
+    vec3 G_dir = vec3(0.0, -1.0, 0.0);
+    float G_magnitude = 9.81;
+    vec3 ge = 0.5f * G_dir * G_magnitude;                   // mass * G_dir * G_magnitude, environment gravity
+    float angle = curBlade.v0.w;
+    vec3 t1 = normalize( vec3(cos(angle), 0, sin(angle)) ); // bitangent t1
+    vec3 face = cross(up, t1);                              // normal vector of the blade face
+    vec3 gf = 1/4.f * length(ge) * face;                    // front gravity
+    vec3 g = ge + gf;
+    naturalForce += g;
+#endif
+
+#if WIND
+    vec3 wi = wind(curBlade.v0.xz, totalTime);
+    float f_dir = 1 - abs( dot(normalize(wi), normalize(v2 - v0)) );  // dirtectional alignment
+    float f_r = dot(v2 - v0, up) / height;                            // height ratio
+    float theta = f_dir * f_r;                                        // alignment value
+
+    vec3 w = wi * theta;
+    naturalForce += w;
+#endif
+    
+    vec3 corrV2 = v2 + naturalForce * deltaTime;
+    vec3 corrV1 = v1;
+
+    // 5.2 State validation
+    corrV2 = corrV2 - up * min(dot(up, (corrV2 - v0)), 0);
+    
+    vec3 proj_up = dot(up, corrV2 - v0) * up;
+    float l_proj = length(corrV2 - v0 - up * proj_up );      // length of vec v0 to v2 projected onto the ground
+    corrV1 = v0 + height * up * max(1.0f - l_proj/height, 0.05 * max(l_proj/height, 1.0f));
+
+    float L0 = distance(v0, corrV2);
+    float L1 = distance(v0, corrV1) + distance(corrV1, corrV2);
+    float L = (2 * L0 + L1) / 3.0f;
+    float coef_r = height / L;
+    corrV1 = v0 + (corrV1 - v0) * coef_r;
+    corrV2 = corrV1 + (corrV2 - corrV1) * coef_r;
+    
+    
+    curBlade.v1.xyz = corrV1;
+    curBlade.v2.xyz = corrV2;
 
 	// TODO: Cull blades that are too far away or not in the camera frustum and write them
 	// to the culled blades buffer
@@ -72,6 +156,7 @@ void main() {
 	// You want to write the visible blades to the buffer without write conflicts between threads
 
     // atomicAdd returns the number before added.
+    inputBlades.blades[bladeIdx] = curBlade;
     uint oldIdx = atomicAdd(numBlades.vertexCount, 1);
     outputBlades.blades[oldIdx] = curBlade;
 }

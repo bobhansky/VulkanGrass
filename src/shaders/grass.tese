@@ -15,10 +15,13 @@ layout(set = 0, binding = 0) uniform CameraBufferObject {
 layout(location = 0) in vec3 inV0[];    // root of the grass
 layout(location = 1) in vec3 inV1[];    
 layout(location = 2) in vec3 inV2[];
-layout(location = 3) in vec3 inParams[];    // dir, height, width
+layout(location = 3) in vec4 inParams[];    // dir, height, width
 
 
 layout(location = 0) out vec2 outUV;
+
+// The border between these two shapes coef
+#define TAU 0.6f
 
 void main() {
     // Represents the barycentric coordinates of the vertex being generated inside the tessellated patch.
@@ -27,24 +30,27 @@ void main() {
 
 	// TODO: Use u and v to parameterize along the grass blade and output positions for each vertex of the grass blade
 
-    float angle = inParams[0].x;          // blade direction in radians
-    float height = inParams[0].y;     // blade height
-    float width  = inParams[0].z;         // blade width
+    float angle = inParams[0].x;            // blade direction in radians
+    float height = inParams[0].y;           // blade height
+    float width  = inParams[0].z * 0.8;     // blade width
     
-    // bitangent t1
-    vec3 dir = normalize( vec3(cos(angle), 0, sin(angle)) );
+    // belows are according to the paper section 6.3
+    // I implemented the quad-triangle shape described by the paper
+    vec3 t1 = normalize( vec3(cos(angle), 0, sin(angle)) ); // bitangent t1
     vec3 up = vec3(0.0, 1.0, 0.0);
+    vec3 a = inV0[0] + v * (inV1[0] - inV0[0]);
+    vec3 b = inV1[0] + v * (inV2[0] - inV1[0]);
+    vec3 c = a + v * (b - a);
+    vec3 c0 = c - width * t1;
+    vec3 c1 = c + width * t1;
 
-    // quad 
-    float halfWidth = width * 0.5;
-    vec3 widthOffset = (u - 0.5) * 2.0 * halfWidth * dir;
-    // Quad construction
-    vec3 heightOffset = v * height * up;
-    vec3 worldPos = inV0[0] + widthOffset + heightOffset;
+    float t = 0.5 + (u - 0.5)*(1 - max(v-TAU, 0) / (1 - TAU));
+    vec3 p = (1 - t) * c0 + t * c1;
+
     outUV = vec2(u, v);
 
     // Final clip-space position
-    gl_Position = camera.proj * camera.view * vec4(worldPos, 1.0);
+    gl_Position = camera.proj * camera.view * vec4(p, 1.0);
 }
 
 
