@@ -6,6 +6,7 @@ layout(quads, equal_spacing, ccw) in;
 layout(set = 0, binding = 0) uniform CameraBufferObject {
     mat4 view;
     mat4 proj;
+    vec3 camPos;
 } camera;
 
 // TODO: Declare tessellation evaluation shader inputs and outputs
@@ -32,7 +33,7 @@ void main() {
 
     float angle = inParams[0].x;            // blade direction in radians
     float height = inParams[0].y;           // blade height
-    float width  = inParams[0].z * 0.8;     // blade width
+    float width  = inParams[0].z * 0.4;     // blade width
     
     // belows are according to the paper section 6.3
     // I implemented the quad-triangle shape described by the paper

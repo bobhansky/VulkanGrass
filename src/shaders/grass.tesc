@@ -6,6 +6,7 @@ layout(vertices = 1) out;
 layout(set = 0, binding = 0) uniform CameraBufferObject {
     mat4 view;
     mat4 proj;
+    vec3 camPos;
 } camera;
 
 // TODO: Declare tessellation control shader inputs and outputs
@@ -42,7 +43,7 @@ void main() {
         gl_TessLevelOuter[2] = 5;
         gl_TessLevelOuter[3] = 5;
 
-         //gl_TessLevelInner[0] = 4;
-         //gl_TessLevelInner[1] = 4;
+         gl_TessLevelInner[0] = 4;
+         gl_TessLevelInner[1] = 4;
     }
 }

@@ -265,7 +265,7 @@ void Renderer::CreateDescriptorPool() {
     }
 }
 
-// Camera Descriptor Set contains view and projection matrices
+// Camera Descriptor Set contains view and projection matrices, and camPos 
 void Renderer::CreateCameraDescriptorSet() {
     // Describe the desciptor set
     VkDescriptorSetLayout layouts[] = { cameraDescriptorSetLayout };
