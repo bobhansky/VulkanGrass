@@ -1,12 +1,13 @@
 Vulkan Grass Rendering
 ==================================
+Last update: 2025/12/27
+### This is a course project of University of Pennsylvania, CIS 565: GPU Programming and Architecture, Project 5.
+### I used the provided base code to start. 
+This project is implemented based on the paper:
 
-**University of Pennsylvania, CIS 565: GPU Programming and Architecture, Project 5**
+Jahrmann, and Wimmer. *Responsive real-time grass rendering for general 3D scenes*, 2017
 
-* (TODO) YOUR NAME HERE
-* Tested on: (TODO) Windows 22, i7-2222 @ 2.22GHz 22GB, GTX 222 222MB (Moore 2222 Lab)
+## Test Machine
+Windows 11, Intel Core i7 12700h, Nvidia RTX 3060. 16GB RAM.
 
-### (TODO: Your README)
-
-*DO NOT* leave the README to the last minute! It is a crucial part of the
-project, and we will not be able to grade you without a good README.
+detailed explaination/demo would be added in the future.
