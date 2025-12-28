@@ -4,6 +4,8 @@
 #define WORKGROUP_SIZE 32
 layout(local_size_x = WORKGROUP_SIZE, local_size_y = 1, local_size_z = 1) in;
 
+#define N 20//(1 << 14)     // a fraction of every N blades got culled
+
 #define RECOVERY_FORCE 1
 #define GRAVITY 1
 #define WIND 1
@@ -77,7 +79,6 @@ vec3 wind1(vec2 v0xz, float time)
     float gust = 0;// 0.35 * sin(phase * 4.0 + time * 1.9);
 
     float w = strength * (base + gust);
-
     return dir * w;
 }
 
@@ -99,7 +100,6 @@ vec3 wind2(vec2 v0xz, float time)
     float gust =  0; // 0.35 * sin(phase * 4.0 + time * 1.9);
 
     float w = strength * (base + gust);
-
     return dir * w;
 }
 
@@ -179,7 +179,6 @@ void main() {
 	// to the culled blades buffer
 	// Note: to do this, you will need to use an atomic operation to read and update numBlades.vertexCount
 	// You want to write the visible blades to the buffer without write conflicts between threads
-    float camDis = distance(camera.camPos, v0);
     vec3 viewDir = normalize(v0 - camera.camPos);
 
     bool isCulled = false;
@@ -218,12 +217,15 @@ void main() {
 #endif
 
 #if DISTANCE_CULL
-    bool disCull = (camDis > 40.0);
+    float d_proj = length(v0 - camera.camPos - up * dot(v0 - camera.camPos, up));   // distance projected on the ground
+    float d_max = 40.f;
+    
+    int cullIndx = int( N * (1 - min(1,(d_proj/d_max))) );
+    bool disCull = ((bladeIdx % N) >= cullIndx);        // use > to keep 1 blade every N blades
     isCulled = isCulled || disCull;
 #endif 
 
-    
-    
+
     inputBlades.blades[bladeIdx] = curBlade;        // try switching the order of this line and "if(isCulled) return;"
     if(isCulled) return;
     // atomicAdd returns the number before added.
