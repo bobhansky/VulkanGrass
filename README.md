@@ -49,4 +49,7 @@ Use distance-based tessellation LOD in the TCS to reduce subdivision precisions.
 3. Start Grass Pipeline. Bind culledBladesBuffer SSBO as vertexBuffer as Vertex shader vertex buffer input.
 4. Tessellation control shader sets the subdivision levels (Level of Details, LOD) based on distance from grass root to camera.
 5. Tessellation evaluation shader populates the actual geometry.
-6. Fragment shader for shading. 
+6. Fragment shader for shading.
+
+# Perforamance Analysis
+TODO
