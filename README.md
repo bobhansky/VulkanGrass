@@ -51,5 +51,5 @@ Use distance-based tessellation LOD in the TCS to reduce subdivision precisions.
 5. Tessellation evaluation shader populates the actual geometry.
 6. Fragment shader for shading.
 
-# Perforamance Analysis
+# Performance Analysis
 TODO
