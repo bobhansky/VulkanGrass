@@ -184,7 +184,7 @@ void main() {
     bool isCulled = false;
 #if ORIENTATION_CULL
     // cull if width dir and viewDir align
-    bool oriCull = abs(dot(t1, viewDir)) > 0.93f;
+    bool oriCull = abs(dot(t1, viewDir)) > 0.88f;
     isCulled = isCulled || oriCull;
 #endif
 
