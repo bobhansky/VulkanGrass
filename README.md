@@ -36,7 +36,7 @@ Perform frustum culling in Compute shader stage so blades outside the camera vie
 
 Image comes from https://github.com/bobhansky/FrustumCullingPerformanceAnalysis
 
-### 4. Tessellation Control Shader (TCS) LOD
+### 4. Tessellation Control Shader (TCS) Level of Details (LOD)
 Use distance-based tessellation LOD in the TCS to reduce subdivision precisions.
 <img src="https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/Demo_LOD.gif" width=600 height=338/>
       <pre>
@@ -52,4 +52,35 @@ Use distance-based tessellation LOD in the TCS to reduce subdivision precisions.
 6. Fragment shader for shading.
 
 # Performance Analysis
-TODO
+## Test scene:
+
+<img src="https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/compare_Full.gif" width=600 height=338/> 
+<img src="https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/compare_None.gif" width=600 height=338/>
+<pre>
+    Up: With all optimization (1,2,3,4).
+    Down: without any optimazation
+</pre>
+
+## Test Tool: RenderDoc v1.38
+### Case1: without any optimization
+      Grass rendered count: 16384      (all blades in the test)
+      FPS: 709
+### Case2: with Orientation Cull, Distance Cull, Frustum Cull
+      Grass rendered count: 7640 
+      FPS: 1110
+### Case3: with Orientation Cull, Distance Cull, Frustum Cull, and TCS LOD
+      Grass rendered count: 7640 
+      FPS: 1035
+
+In Case1 and Case2, In tessellation control shader, **gl_TessLevelOuter** is set to 7, **gl_TessLevelInner** is set to 5.
+
+In Case3, **gl_TessLevelOuter** is interpolated from 2 to 7, **gl_TessLevelInner** is interpolated from 1 to 5, based on distance to camera.
+
+## Analysis: 
+**Phenomenon:** 
+FPS of **Case1** is the least without doubt. 
+**Case3** (with LOD) should've intuitively outperformed **Case2** where LOD is disabled, but in this test it didn't.
+
+**Possible reason:** even though the geometry in Case3 is less complex due to LOD, the computations for LOD levels in tessellation control shader 
+(distance evaluation, interpolation, branching, and non-uniform tessellation levels) introduce overhead that compensates the geometry reduction benifits, and thus 
+result in a slightly worse performance.
