@@ -109,7 +109,7 @@ The purpose is to create a geometrically complex test scene. In real world appli
 
 **Result**
 
-![Demo](https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/case123dot1.png)
+![Demo](https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/case123ot1.png)
 
 ### Analysis: Geometry and LOD view using RenderDoc:
 **Case1.1 and Case 2.1**
