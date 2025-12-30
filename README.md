@@ -37,7 +37,7 @@ Perform frustum culling in Compute shader stage so blades outside the camera vie
 Use distance-based tessellation LOD in the TCS to reduce subdivision precisions.
 <img src="https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/Demo_LOD.gif" width=600 height=338/>
       <pre>
-         The farther the camera is, the edgier the grass is, and the less triangle generated.
+         The farther the camera is, the edgier the grass is, and the less triangles generate.
       </pre>
 
 # Compute and Grass Pipeline:
