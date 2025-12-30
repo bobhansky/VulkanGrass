@@ -71,16 +71,52 @@ Use distance-based tessellation LOD in the TCS to reduce subdivision precisions.
 ### Case3: with Orientation Cull, Distance Cull, Frustum Cull, and TCS LOD
       Grass rendered count: 7640 
       FPS: 1035
-
+**Settings**   
 In Case1 and Case2, In tessellation control shader, **gl_TessLevelOuter** is set to 7, **gl_TessLevelInner** is set to 5.
 
 In Case3, **gl_TessLevelOuter** is interpolated from 2 to 7, **gl_TessLevelInner** is interpolated from 1 to 5, based on distance to camera.
 
-## Analysis: 
+### Analysis For Case1, 2, 3: 
 **Phenomenon:** 
 FPS of **Case1** is the least without doubt. 
 **Case3** (with LOD) should've intuitively outperformed **Case2** where LOD is disabled, but in this test it didn't.
 
 **Possible reason:** even though the geometry in Case3 is less complex due to LOD, the computations for LOD levels in tessellation control shader 
-(distance evaluation, interpolation, branching, and non-uniform tessellation levels) introduce overhead that compensates the geometry reduction benifits, and thus 
+(distance evaluation, interpolation, and non-uniform tessellation levels) introduce overhead that compensates the geometry reduction benifits, and thus 
 result in a slightly worse performance.
+
+The grass geometry is too simple and thus might not suit for LOD. In order to see the benifit of LOD, 2 extra test cases is added below. 
+
+### Case1.1: without any optimization
+      Grass rendered count: 16384 
+      FPS: 247
+### Case2.1: with Orientation Cull, Distance Cull, Frustum Cull
+      Grass rendered count: 7640 
+      FPS: 473
+### Case3.1: with Orientation Cull, Distance Cull, Frustum Cull, and TCS LOD
+      Grass rendered count: 7640 
+      FPS: 842
+**Settings**     
+In **Case1.1** and **Case2.1**, **gl_TessLevelOuter** is set to 20, **gl_TessLevelInner** is set to 20.
+
+In **Case3.1**, **gl_TessLevelOuter** is interpolated from 2 to 20, **gl_TessLevelInner** is interpolated from 1 to 20, based on distance to camera.
+
+The purpose is to create a geometrically complex test scene. In real world application, grass doesn't need to be such delicate.
+
+### Analysis: Geometry and LOD view using RenderDoc:
+**Case1.1 and Case 2.1**
+
+![Demo](https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/renderDoc_20in20out_1.png)
+<img src="https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/renderDoc_20in20out_2.png" width=800 height=450/> 
+
+Each Blade is formed by excessively many triangle to represent a geometrically complex model.
+
+**Case 3.1**
+
+<img src="https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/renderDoc_1_20in_2_20out_1.png" width=800 height=450/> 
+
+The blade geometry is still complex when it is close to camera.
+
+<img src="https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/renderDoc_1_20in_2_20out_2.png" width=800 height=450/> 
+
+But it degrades into a simple geometry when far away, reducing the number of triangles for geometry generation and shading.
