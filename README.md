@@ -89,7 +89,7 @@ FPS of **Case1** is the least without doubt.
 (distance evaluation, interpolation, and non-uniform tessellation levels) introduce overhead that compensates the geometry reduction benifits, and thus 
 result in a slightly worse performance.
 
-The grass geometry is too simple and thus might not suit for LOD. In order to see the benifit of LOD, 2 extra test cases is added below. 
+The grass geometry is too simple and thus might not suit for LOD. In order to see the benifit of LOD, 3 extra test cases is added below. 
 
 ### Case1.1: without any optimization
       Grass rendered count: 16384 
