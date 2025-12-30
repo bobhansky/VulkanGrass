@@ -61,7 +61,7 @@ Use distance-based tessellation LOD in the TCS to reduce subdivision precisions.
     Down: without any optimazation
 </pre>
 
-## Test Tool: RenderDoc v1.38
+## Test:
 ### Case1: without any optimization
       Grass rendered count: 16384      (all blades in the test)
       FPS: 709
@@ -75,6 +75,10 @@ Use distance-based tessellation LOD in the TCS to reduce subdivision precisions.
 In Case1 and Case2, In tessellation control shader, **gl_TessLevelOuter** is set to 7, **gl_TessLevelInner** is set to 5.
 
 In Case3, **gl_TessLevelOuter** is interpolated from 2 to 7, **gl_TessLevelInner** is interpolated from 1 to 5, based on distance to camera.
+
+**Result**
+
+![Demo](https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/case123.png)
 
 ### Analysis For Case1, 2, 3: 
 **Phenomenon:** 
@@ -102,6 +106,10 @@ In **Case1.1** and **Case2.1**, **gl_TessLevelOuter** is set to 20, **gl_TessLev
 In **Case3.1**, **gl_TessLevelOuter** is interpolated from 2 to 20, **gl_TessLevelInner** is interpolated from 1 to 20, based on distance to camera.
 
 The purpose is to create a geometrically complex test scene. In real world application, grass doesn't need to be such delicate.
+
+**Result**
+
+![Demo](https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/case123_1.png)
 
 ### Analysis: Geometry and LOD view using RenderDoc:
 **Case1.1 and Case 2.1**
