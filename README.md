@@ -31,7 +31,10 @@ Cull blades that are far from camera (distance projected onto the ground)
 
 
 ### 3. Frustum Culling
-Perform frustum culling in Compute shader stage so blades outside the camera view frustum are rejected early.  
+Perform frustum culling in Compute shader stage so blades outside the camera view frustum are rejected early. 
+<img src="https://github.com/bobhansky/FrustumCullingPerformanceAnalysis/blob/main/resources/fc_show.gif" width=800 height=450/>
+
+Image comes from https://github.com/bobhansky/FrustumCullingPerformanceAnalysis
 
 ### 4. Tessellation Control Shader (TCS) LOD
 Use distance-based tessellation LOD in the TCS to reduce subdivision precisions.
