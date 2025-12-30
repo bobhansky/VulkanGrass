@@ -4,7 +4,7 @@
 #define WORKGROUP_SIZE 32
 layout(local_size_x = WORKGROUP_SIZE, local_size_y = 1, local_size_z = 1) in;
 
-#define N 20//(1 << 14)     // a fraction of every N blades got culled
+#define N 20//(1 << 14)     // a fraction of every N blades got culled, distance culling level
 
 #define RECOVERY_FORCE 1
 #define GRAVITY 1
@@ -184,7 +184,7 @@ void main() {
     bool isCulled = false;
 #if ORIENTATION_CULL
     // cull if width dir and viewDir align
-    bool oriCull = abs(dot(t1, viewDir)) > 0.95f;
+    bool oriCull = abs(dot(t1, viewDir)) > 0.93f;
     isCulled = isCulled || oriCull;
 #endif
 

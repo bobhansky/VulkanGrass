@@ -9,8 +9,17 @@ layout(set = 0, binding = 0) uniform CameraBufferObject {
     vec3 camPos;
 } camera;
 
+#define LOD 1
+
+#define MIN_IN_LEVEL 1
+#define MAX_IN_LEVEL 5
+#define MIN_OUT_LEVEL 2
+#define MAX_OUT_LEVEL 7
+#define DIS_OFF_SET 2.f
+#define MAX_DIS 25.f
+
 // TODO: Declare tessellation control shader inputs and outputs
-// array cuz TCS operates on an entire patch, not a single vertex.
+// array cuz All TCS inputs are per-patch arrays, indexed by control point.
 layout(location = 0) in vec3 inV0[];    
 layout(location = 1) in vec3 inV1[];
 layout(location = 2) in vec3 inV2[];
@@ -22,11 +31,9 @@ layout(location = 2) out vec3 outV2[];
 layout(location = 3) out vec4 outParams[];
 
 
-
 void main() {
 	// Don't move the origin location of the patch
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
-
     
 	// TODO: Write any shader outputs
     // Pass custom per-blade data through
@@ -38,12 +45,27 @@ void main() {
 	// TODO: Set level of tesselation
     if (gl_InvocationID == 0)
     {
-        gl_TessLevelOuter[0] = 5;
-        gl_TessLevelOuter[1] = 5;
-        gl_TessLevelOuter[2] = 5;
-        gl_TessLevelOuter[3] = 5;
 
-         gl_TessLevelInner[0] = 4;
-         gl_TessLevelInner[1] = 4;
+#if LOD
+        float dis = distance(camera.camPos, inV0[0]);
+        float lerpCoef = clamp(( (dis - DIS_OFF_SET) / MAX_DIS), 0.0, 1.0);
+        int inTesLevel = int(mix(MAX_IN_LEVEL, MIN_IN_LEVEL, lerpCoef));
+        int outTesLevel = int(mix(MAX_OUT_LEVEL, MIN_OUT_LEVEL, lerpCoef));
+        gl_TessLevelOuter[0] = outTesLevel;
+        gl_TessLevelOuter[1] = outTesLevel;
+        gl_TessLevelOuter[2] = outTesLevel;
+        gl_TessLevelOuter[3] = outTesLevel;
+
+        gl_TessLevelInner[0] = inTesLevel;
+        gl_TessLevelInner[1] = inTesLevel;
+#else
+        gl_TessLevelOuter[0] = MAX_OUT_LEVEL;
+        gl_TessLevelOuter[1] = MAX_OUT_LEVEL;
+        gl_TessLevelOuter[2] = MAX_OUT_LEVEL;
+        gl_TessLevelOuter[3] = MAX_OUT_LEVEL;
+
+        gl_TessLevelInner[0] = MAX_IN_LEVEL;
+        gl_TessLevelInner[1] = MAX_IN_LEVEL;
+#endif
     }
 }

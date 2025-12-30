@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "BufferUtils.h"
 
+
 Camera::Camera(Device* device, float aspectRatio) : device(device) {
     r = 10.0f;
     theta = 0.0f;
@@ -43,6 +44,21 @@ void Camera::UpdateOrbit(float deltaX, float deltaY, float deltaZ) {
 
     cameraBufferObject.viewMatrix = glm::inverse(finalTransform);
 	cameraBufferObject.cameraPosition = glm::vec3(finalTransform[3]);
+
+    memcpy(mappedData, &cameraBufferObject, sizeof(CameraBufferObject));
+}
+
+void Camera::SetCamAtTestPos() {
+	// std::cout << "theta: " << theta << " phi: " << phi << " r: " << r << std::endl;
+    theta = -20.5;  phi = -25.5;  r = 20.8;
+    float radTheta = glm::radians(theta);
+    float radPhi = glm::radians(phi);
+
+    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), radTheta, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), radPhi, glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 finalTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)) * rotation * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, r));
+
+    cameraBufferObject.viewMatrix = glm::inverse(finalTransform);
+    cameraBufferObject.cameraPosition = glm::vec3(finalTransform[3]);
 
     memcpy(mappedData, &cameraBufferObject, sizeof(CameraBufferObject));
 }
