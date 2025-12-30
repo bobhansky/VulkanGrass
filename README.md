@@ -23,9 +23,10 @@ Cull blades that are facing orthogonal to the camera view direction to avoid ren
 ### 2. Distance Culling
 Cull blades that are far from camera (distance projected onto the ground)
 
-<img src="https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/DisCull_1.gif" width=450 height=253/> <img src="https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/DisCull_2.gif" width=450 height=253/>
+<img src="https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/DisCull_1.gif" width=600 height=338/> <img src="https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/DisCull_2.gif" width=600 height=338/>
       <pre>
-          Left: Full culling.                                         Right: Preserve a portion of grass
+          Up: Full culling.
+          Down: Preserve a portion of grass
       </pre>
 
 
