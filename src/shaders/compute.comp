@@ -63,20 +63,20 @@ layout(set = 2, binding = 2) buffer NumBlades {
 
 vec3 wind1(vec2 v0xz, float time)
 {
-    vec3 dir = normalize(vec3(1.0, 0.0, 0.3)); // main wind direction
+    vec3 dir = normalize(vec3(1.0f, 0.0f, 0.3f)); // main wind direction
 
-    float wavelength = 50.0;
-    float speed      = 1.2;
-    float strength   = 5.0;
+    float wavelength = 50.0f;
+    float speed      = 1.2f;
+    float strength   = 5.0f;
 
     // phi(v0, t) = 2pi/wavelength * dot(pos, dir) - speed * t
-    float phase = dot(v0xz, dir.xz) * (2.0 * 3.14 / wavelength)
+    float phase = dot(v0xz, dir.xz) * (2.0f * 3.14f / wavelength)
                   - time * speed;
 
-    float base = 1/2.f * (sin(phase) + 1);
+    float base = 0.5f * (sin(phase) + 1.f);
 
     // small secondary noise-like wave
-    float gust = 0;// 0.35 * sin(phase * 4.0 + time * 1.9);
+    float gust = 0.f;// 0.35 * sin(phase * 4.0 + time * 1.9);
 
     float w = strength * (base + gust);
     return dir * w;
@@ -84,20 +84,20 @@ vec3 wind1(vec2 v0xz, float time)
 
 vec3 wind2(vec2 v0xz, float time)
 {
-    vec3 dir = normalize(vec3(-1.0, 0.0, -0.3)); // main wind direction
+    vec3 dir = normalize(vec3(-1.f, 0.f, -0.3f)); // main wind direction
 
-    float wavelength = 50.0;
-    float speed      = 1.2;
-    float strength   = 5.0;
+    float wavelength = 50.0f;
+    float speed      = 1.2f;
+    float strength   = 5.0f;
 
     // phi(v0, t) = 2pi/wavelength * dot(pos, dir) - speed * t
-    float phase = 3.14 + dot(v0xz, dir.xz) * (2.0 * 3.14 / wavelength)
+    float phase = 3.14f + dot(v0xz, dir.xz) * (2.0f * 3.14f / wavelength)
                   - time * speed;
 
-    float base = 1/2.f * (sin(phase) + 1);
+    float base = 0.5f * (sin(phase) + 1.f);
 
     // small secondary noise-like wave
-    float gust =  0; // 0.35 * sin(phase * 4.0 + time * 1.9);
+    float gust =  0.f; // 0.35 * sin(phase * 4.0 + time * 1.9);
 
     float w = strength * (base + gust);
     return dir * w;
@@ -116,7 +116,7 @@ void main() {
     float stiffness = curBlade.up.w;
 
     // TODO: Apply forces on every blade and update the vertices in the buffer
-    vec3 naturalForce = vec3(0.0, 0.0, 0.0); 
+    vec3 naturalForce = vec3(0.0f, 0.0f, 0.0f); 
     vec3 v0 = curBlade.v0.xyz;
     vec3 v1 = curBlade.v1.xyz;
     vec3 v2 = curBlade.v2.xyz;
@@ -128,14 +128,14 @@ void main() {
     naturalForce += r;
 #endif
 
-    vec3 G_dir = vec3(0.0, -1.0, 0.0);
-    float G_magnitude = 9.81;
-    vec3 ge = 0.5f * G_dir * G_magnitude;                   // mass * G_dir * G_magnitude, environment gravity
+    vec3 G_dir = vec3(0.0f, -1.0f, 0.0f);
+    float G_magnitude = 9.81f;
+    vec3 ge = 0.5f * G_dir * G_magnitude;                     // mass * G_dir * G_magnitude, environment gravity
     float angle = curBlade.v0.w;
-    vec3 t1 = normalize( vec3(cos(angle), 0, sin(angle)) ); // bitangent t1
-    vec3 faceDir = normalize(cross(up, t1));                           // normal vector of the blade face
+    vec3 t1 = normalize( vec3(cos(angle), 0.f, sin(angle)) ); // bitangent t1
+    vec3 faceDir = normalize(cross(up, t1));                  // normal vector of the blade face
 #if GRAVITY
-    vec3 gf = 1/4.f * length(ge) * faceDir;                 // front gravity
+    vec3 gf = 0.25f * length(ge) * faceDir;                   // front gravity
     vec3 g = ge + gf;
     naturalForce += g;
 #endif
@@ -154,12 +154,12 @@ void main() {
     vec3 corrV1 = v1;
 
     // 5.2 State validation
-    corrV2 = corrV2 - up * min(dot(up, (corrV2 - v0)), 0);
+    corrV2 = corrV2 - up * min(dot(up, (corrV2 - v0)), 0.f);
     
     // v1 pos validation
     vec3 proj_up = dot(up, corrV2 - v0) * up;
     float l_proj = length(corrV2 - v0 - up * proj_up );      // length of vec v0 to v2 projected onto the ground
-    corrV1 = v0 + height * up * max(1.0f - l_proj/height, 0.05 * max(l_proj/height, 1.0f));
+    corrV1 = v0 + height * up * max(1.0f - l_proj/height, 0.05f * max(l_proj/height, 1.0f));
 
     // length validation
     float L0 = distance(v0, corrV2);
@@ -190,8 +190,8 @@ void main() {
 
 #if FRUSTUM_CULL
     bool inside_m = false;
-    float t = 0.1; // tolerance
-    vec3 m = 1/4.f * v0 + 1/2.f * v1 + 1/4.f * v2;
+    float t = 0.1f; // tolerance
+    vec3 m = 0.25f * v0 + 0.5f * v1 + 0.25f * v2;
     mat4 viewProj = camera.proj * camera.view;
     vec4 proj_m = viewProj * vec4(m, 1.0);
     float h = proj_m.w + t;
@@ -200,14 +200,14 @@ void main() {
     inside_m = inside_m && ((proj_m.z > - h) && (proj_m.z < h));
     
     bool inside_v0 = false;
-    vec4 proj_v0 = viewProj * vec4(v0, 1.0);
+    vec4 proj_v0 = viewProj * vec4(v0, 1.0f);
     h = proj_v0.w + t;
     inside_v0 = (proj_v0.x > - h) && (proj_v0.x < h);
     inside_v0 = inside_v0 && ((proj_v0.y > - h) && (proj_v0.y < h));
     inside_v0 = inside_v0 && ((proj_v0.z > - h) && (proj_v0.z < h));
 
     bool inside_v2 = false;
-    vec4 proj_v2 = viewProj * vec4(v2, 1.0);
+    vec4 proj_v2 = viewProj * vec4(v2, 1.0f);
     h = proj_v2.w + t;
     inside_v2 = (proj_v2.x > - h) && (proj_v2.x < h);
     inside_v2 = inside_v2 && ((proj_v2.y > - h) && (proj_v2.y < h));

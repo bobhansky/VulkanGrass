@@ -9,12 +9,12 @@ layout(set = 0, binding = 0) uniform CameraBufferObject {
     vec3 camPos;
 } camera;
 
-#define LOD 1
+#define LOD 0
 
 #define MIN_IN_LEVEL 1
-#define MAX_IN_LEVEL 5
+#define MAX_IN_LEVEL 20
 #define MIN_OUT_LEVEL 2
-#define MAX_OUT_LEVEL 7
+#define MAX_OUT_LEVEL 20
 #define DIS_OFF_SET 2.f
 #define MAX_DIS 25.f
 
@@ -48,9 +48,9 @@ void main() {
 
 #if LOD
         float dis = distance(camera.camPos, inV0[0]);
-        float lerpCoef = clamp(( (dis - DIS_OFF_SET) / MAX_DIS), 0.0, 1.0);
-        int inTesLevel = int(mix(MAX_IN_LEVEL, MIN_IN_LEVEL, lerpCoef));
-        int outTesLevel = int(mix(MAX_OUT_LEVEL, MIN_OUT_LEVEL, lerpCoef));
+        float lerpCoef = clamp(( (dis - DIS_OFF_SET) / MAX_DIS), 0.f, 1.f);
+        int inTesLevel = int(mix(MAX_IN_LEVEL, MIN_IN_LEVEL, lerpCoef) + 0.5f);
+        int outTesLevel = int(mix(MAX_OUT_LEVEL, MIN_OUT_LEVEL, lerpCoef) + 0.5f);
         gl_TessLevelOuter[0] = outTesLevel;
         gl_TessLevelOuter[1] = outTesLevel;
         gl_TessLevelOuter[2] = outTesLevel;

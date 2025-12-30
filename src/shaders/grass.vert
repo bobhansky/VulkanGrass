@@ -21,9 +21,9 @@ layout(location = 3) out vec4 outParams;
 void main() {
 	// TODO: Write gl_Position and any other shader outputs
 
-    vec4 worldV0 = model * vec4(v0.xyz, 1.0);
-    vec4 worldV1 = model * vec4(v1.xyz, 1.0);
-    vec4 worldV2 = model * vec4(v2.xyz, 1.0);
+    vec4 worldV0 = model * vec4(v0.xyz, 1.0f);
+    vec4 worldV1 = model * vec4(v1.xyz, 1.0f);
+    vec4 worldV2 = model * vec4(v2.xyz, 1.0f);
 
     
    // gl_Position = worldV0;  // Patch control point (arbitrary space)  world space here

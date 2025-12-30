@@ -33,25 +33,25 @@ void main() {
 
     float angle = inParams[0].x;            // blade direction in radians
     float height = inParams[0].y;           // blade height
-    float width  = inParams[0].z * 0.4;     // blade width
+    float width  = inParams[0].z * 0.4f;     // blade width
     
     // belows are according to the paper section 6.3
     // I implemented the quad-triangle shape described by the paper
-    vec3 t1 = normalize( vec3(cos(angle), 0, sin(angle)) ); // bitangent t1
-    vec3 up = vec3(0.0, 1.0, 0.0);
+    vec3 t1 = normalize( vec3(cos(angle), 0.f, sin(angle)) ); // bitangent t1
+    vec3 up = vec3(0.0f, 1.0f, 0.0f);
     vec3 a = inV0[0] + v * (inV1[0] - inV0[0]);
     vec3 b = inV1[0] + v * (inV2[0] - inV1[0]);
     vec3 c = a + v * (b - a);
     vec3 c0 = c - width * t1;
     vec3 c1 = c + width * t1;
 
-    float t = 0.5 + (u - 0.5)*(1 - max(v-TAU, 0) / (1 - TAU));
-    vec3 p = (1 - t) * c0 + t * c1;
+    float t = 0.5f + (u - 0.5f)*(1 - max(v-TAU, 0.f) / (1.f - TAU));
+    vec3 p = (1.f - t) * c0 + t * c1;
 
     outUV = vec2(u, v);
 
     // Final clip-space position
-    gl_Position = camera.proj * camera.view * vec4(p, 1.0);
+    gl_Position = camera.proj * camera.view * vec4(p, 1.f);
 }
 
 
