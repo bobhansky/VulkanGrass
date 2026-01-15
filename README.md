@@ -1,6 +1,6 @@
 Vulkan Grass Rendering
 ==================================
-Last update: 12/30/2025
+Last update: 1/14/2026
 ### This is a course project of University of Pennsylvania, CIS 565: GPU Programming and Architecture
 ### I used the provided base code to start. 
 This project is implemented based on the paper:
