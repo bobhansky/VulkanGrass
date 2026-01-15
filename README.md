@@ -12,6 +12,8 @@ Windows 11, Intel Core i7 12700h, Nvidia RTX 3060. 16GB RAM.
 
 Visual Studio 2022. Release Mode, app resolution 1920 x 1080
 
+Please use git clone --recursive when cloning this repo as there are submodules which need to be cloned as well.
+
 ### Demo with all optimizations below.
 ![Demo](https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/Demo_fullOptm.gif)
 
