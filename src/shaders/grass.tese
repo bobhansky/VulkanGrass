@@ -13,10 +13,10 @@ layout(set = 0, binding = 0) uniform CameraBufferObject {
 
 // Custom per-blade data from TCS
 // input data is per control point, not per generated vertex.
-layout(location = 0) in vec3 inV0[];    // root of the grass
-layout(location = 1) in vec3 inV1[];    
-layout(location = 2) in vec3 inV2[];
-layout(location = 3) in vec4 inParams[];    // dir, height, width
+layout(location = 0) in vec4 inV0[];    // v0, dir
+layout(location = 1) in vec4 inV1[];    // v1, height
+layout(location = 2) in vec4 inV2[];    // v2, width
+layout(location = 3) in vec4 inUp[];    // up, stiffness
 
 
 layout(location = 0) out vec2 outUV;
@@ -31,16 +31,20 @@ void main() {
 
 	// TODO: Use u and v to parameterize along the grass blade and output positions for each vertex of the grass blade
 
-    float angle = inParams[0].x;            // blade direction in radians
-    float height = inParams[0].y;           // blade height
-    float width  = inParams[0].z * 0.4f;     // blade width
+    float angle = inV0[0].w;            // blade direction in radians
+    float height = inV1[0].w;           // blade height
+    float width  = inV2[0].w * 0.4f;    // blade width
+
+    vec3 v0 = inV0[0].xyz;              // base position
+    vec3 v1 = inV1[0].xyz;               
+    vec3 v2 = inV2[0].xyz;
     
     // belows are according to the paper section 6.3
     // I implemented the quad-triangle shape described by the paper
     vec3 t1 = normalize( vec3(cos(angle), 0.f, sin(angle)) ); // bitangent t1
     vec3 up = vec3(0.0f, 1.0f, 0.0f);
-    vec3 a = inV0[0] + v * (inV1[0] - inV0[0]);
-    vec3 b = inV1[0] + v * (inV2[0] - inV1[0]);
+    vec3 a = v0 + v * (v1 - v0);
+    vec3 b = v1 + v * (v2 - v1);
     vec3 c = a + v * (b - a);
     vec3 c0 = c - width * t1;
     vec3 c1 = c + width * t1;

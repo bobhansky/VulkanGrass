@@ -20,15 +20,15 @@ layout(set = 0, binding = 0) uniform CameraBufferObject {
 
 // TODO: Declare tessellation control shader inputs and outputs
 // array cuz All TCS inputs are per-patch arrays, indexed by control point.
-layout(location = 0) in vec3 inV0[];    
-layout(location = 1) in vec3 inV1[];
-layout(location = 2) in vec3 inV2[];
-layout(location = 3) in vec4 inParams[];    // dir, height, width
+layout(location = 0) in vec4 inV0[];    // v0, dir
+layout(location = 1) in vec4 inV1[];    // v1, height
+layout(location = 2) in vec4 inV2[];    // v2, width
+layout(location = 3) in vec4 inUp[];    // up, stiffness
 
-layout(location = 0) out vec3 outV0[];
-layout(location = 1) out vec3 outV1[];
-layout(location = 2) out vec3 outV2[];
-layout(location = 3) out vec4 outParams[];
+layout(location = 0) out vec4 outV0[];
+layout(location = 1) out vec4 outV1[];
+layout(location = 2) out vec4 outV2[];
+layout(location = 3) out vec4 outUp[];
 
 
 void main() {
@@ -37,10 +37,10 @@ void main() {
     
 	// TODO: Write any shader outputs
     // Pass custom per-blade data through
-    outV0[gl_InvocationID]     = inV0[gl_InvocationID];
-    outV1[gl_InvocationID]     = inV1[gl_InvocationID];
-    outV2[gl_InvocationID]     = inV2[gl_InvocationID];
-    outParams[gl_InvocationID] = inParams[gl_InvocationID];
+    outV0[gl_InvocationID] = inV0[gl_InvocationID];
+    outV1[gl_InvocationID] = inV1[gl_InvocationID];
+    outV2[gl_InvocationID] = inV2[gl_InvocationID];
+    outUp[gl_InvocationID] = inUp[gl_InvocationID];
 
 	// TODO: Set level of tesselation
     if (gl_InvocationID == 0)
