@@ -1,6 +1,6 @@
 Vulkan Grass Rendering
 ==================================
-Last update: 12/30/2025
+Last update: 1/14/2026
 ### This is a course project of University of Pennsylvania, CIS 565: GPU Programming and Architecture
 ### I used the provided base code to start. 
 This project is implemented based on the paper:
@@ -11,6 +11,8 @@ Jahrmann, and Wimmer. *Responsive real-time grass rendering for general 3D scene
 Windows 11, Intel Core i7 12700h, Nvidia RTX 3060. 16GB RAM.
 
 Visual Studio 2022. Release Mode, app resolution 1920 x 1080
+
+Please use git clone --recursive when cloning this repo as there are submodules which need to be cloned as well.
 
 ### Demo with all optimizations below.
 ![Demo](https://github.com/bobhansky/VulkanGrass/blob/master/rdmeIMG/Demo_fullOptm.gif)
